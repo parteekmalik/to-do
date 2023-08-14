@@ -1,0 +1,32 @@
+body{
+    background-color: antiquewhite;
+}
+
+.to-do{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.TaskInput input{
+    margin-right: 10px;
+    width: 300px;
+}
+.TaskItem{
+    padding: 0;
+    width: 50%;
+    
+}
+.TaskItem div{
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+.TaskItem button{
+    width: 40px;
+}
+.tasks{
+    margin: 0px 10px 0px 10px;
+    width: calc(100% - 80px);
+    word-wrap: break-word;
+    text-align: center;
+}
