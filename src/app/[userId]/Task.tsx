@@ -25,8 +25,13 @@ function Task({
         onClick={onClick}
         color="#2564cf"
       />
-      <span className={"grow " + className}>{task.content}</span>
-      <div className="px-4 py-2 font-medium uppercase text-white bg-red-500 rounded-lg cursor-pointer" onClick={onDeleteClick}>Delete</div>
+      <p className={"grow break-all " + className}>{task.content}</p>
+      <div
+        className="cursor-pointer rounded-lg bg-red-500 px-4 py-2 font-medium uppercase text-white"
+        onClick={onDeleteClick}
+      >
+        Delete
+      </div>
     </div>
   );
 }
