@@ -2,20 +2,30 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
+  delete: publicProcedure
+    .input(
+      z.object({
+        taskId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.task.delete({
+        where: { id: input.taskId },
+      });
+    }),
+
   update: publicProcedure
     .input(
       z.object({
         taskId: z.string(),
-        isCompleted: z.boolean().optional(),
-        isImportant: z.boolean().optional(),
+        isCompleted: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.task.update({
         where: { id: input.taskId },
         data: {
-          ...(input.isCompleted !== undefined && { isCompleted: input.isCompleted }),
-          ...(input.isImportant !== undefined && { isImportant: input.isImportant }),
+          isCompleted: input.isCompleted,
         },
       });
     }),
@@ -25,11 +35,13 @@ export const postRouter = createTRPCRouter({
       z.object({ userName: z.string().min(1), content: z.string().min(1) }),
     )
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.user.findUnique({
-        where: { name: input.userName },
-      }) ?? await ctx.db.user.create({
-        data: { name: input.userName },
-      });
+      const user =
+        (await ctx.db.user.findUnique({
+          where: { name: input.userName },
+        })) ??
+        (await ctx.db.user.create({
+          data: { name: input.userName },
+        }));
 
       return await ctx.db.task.create({
         data: {

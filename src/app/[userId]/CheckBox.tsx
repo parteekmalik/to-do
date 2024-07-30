@@ -1,7 +1,15 @@
-import { useState } from "react";
+import { MouseEventHandler, useState } from "react";
 
-function CustomCheckBox({ color }: { color: string }) {
-  const [isChecked, setisChecked] = useState(false);
+function CustomCheckBox({
+  color,
+  isTrue,
+  onClick,
+}: {
+  color: string;
+  isTrue:boolean
+  onClick: () => void;
+}) {
+  const [isChecked, setisChecked] = useState(isTrue);
   const [ishover, setishover] = useState(false);
   return (
     <label className="relative cursor-pointer">
@@ -15,6 +23,7 @@ function CustomCheckBox({ color }: { color: string }) {
         className="h-5 w-5"
         onMouseEnter={() => setishover(true)}
         onMouseLeave={() => setishover(false)}
+        onClick={onClick}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

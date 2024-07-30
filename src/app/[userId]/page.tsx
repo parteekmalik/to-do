@@ -1,10 +1,11 @@
 "use client";
-import type { Task } from "@prisma/client";
+import type { Task as TaskType } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { api } from "~/trpc/react";
 import CustomCheckBox from "./CheckBox";
 import TaskInput from "./TaskInput";
+import Task from "./Task";
 
 function Main() {
   const pathname = usePathname();
@@ -19,8 +20,28 @@ function Main() {
           Tasks.filter((t) => t.isCompleted),
           Tasks.filter((t) => !t.isCompleted),
         ]
-      : [[] as Task[], [] as Task[]];
+      : [[] as TaskType[], [] as TaskType[]];
   }, [Tasks]);
+  const APIutils = api.useUtils();
+
+  const updateTaskAPI = api.post.update.useMutation({
+    onSettled() {
+      APIutils.post.getTasks.invalidate().catch((err) => console.log(err));
+    },
+  });
+  const deleteTaskAPI = api.post.delete.useMutation({
+    onSettled() {
+      APIutils.post.getTasks.invalidate().catch((err) => console.log(err));
+    },
+  });
+
+  const updateTaskByID = (id: string, isCompleted: boolean) => {
+    updateTaskAPI.mutate({ taskId: id, isCompleted });
+  };
+
+  const deleteTaskByID = (id: string) => {
+    deleteTaskAPI.mutate({ taskId: id });
+  };
 
   return (
     <main className="flex h-screen w-screen flex-col items-center bg-[#faf9f8] pt-10">
@@ -29,25 +50,37 @@ function Main() {
           <TaskInput name={name} />
           {unCompletedTasks.map((task) => {
             return (
-              <TaskLayout content={task.content} key={task.id} className="" />
+              <Task
+                onClick={() => updateTaskByID(task.id, !task.isCompleted)}
+                onDeleteClick={() => deleteTaskByID(task.id)}
+                task={task}
+                key={task.id}
+                className=""
+              />
             );
           })}
         </section>
         <section>
           <div>
-            <button onClick={() => setIsExpanded(!isExpanded)}>
-              {isExpanded ? "Hide Completed Tasks" : "Show Completed Tasks"}
+            <button
+              className="flex gap-2 p-4 text-xl font-semibold"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              <p className={" " + (isExpanded ? "rotate-90" : "")}>{">"}</p>
+              <span>{`completed ${completedTasks.length}`}</span>
             </button>
           </div>
           <div
             className={
-              "flex flex-col gap-3" + (isExpanded ? "block" : "hidden")
+              "flex flex-col gap-3 " + (isExpanded ? "block" : "hidden")
             }
           >
             {completedTasks.map((task) => {
               return (
-                <TaskLayout
-                  content={task.content}
+                <Task
+                  onClick={() => updateTaskByID(task.id, !task.isCompleted)}
+                  onDeleteClick={() => deleteTaskByID(task.id)}
+                  task={task}
                   key={task.id}
                   className="line-through"
                 />
@@ -61,23 +94,3 @@ function Main() {
 }
 
 export default Main;
-
-function TaskLayout({
-  className,
-  content,
-}: {
-  className?: string;
-  content: string;
-}) {
-  return (
-    <div
-      className={
-        "flex w-full items-center gap-5 rounded-md bg-white p-4 text-[1.25rem] font-light text-gray-700 shadow-md hover:bg-[#eff6fc] " +
-        className
-      }
-    >
-      <CustomCheckBox color="#2564cf" />
-      <span className={"grow " + className}>{content}</span>
-    </div>
-  );
-}

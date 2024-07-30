@@ -50,7 +50,8 @@ function TaskInput({ name }: { name: string }) {
           type="text"
           value={newTaskContent}
           onChange={(e) => setNewTaskContent(e.target.value)}
-          className="grow border-none p-2 focus:outline-none"
+          className="grow border-none p-2 focus:outline-none placeholder:text-[#2564cf] placeholder:text-xl"
+          placeholder="Add a task"
         />
       </div>
       <div
