@@ -1,3 +1,4 @@
+import { Task } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -60,11 +61,13 @@ export const postRouter = createTRPCRouter({
         include: { tasks: true },
       });
 
-      if (!user) {
-        await ctx.db.user.create({ data: { name: input.name } });
-        return [];
-      }
+      return user ? user.tasks : ([] as Task[]);
+    }),
+  register: publicProcedure
+    .input(z.object({ name: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.create({ data: { name: input.name } });
 
-      return user.tasks;
+      return user;
     }),
 });

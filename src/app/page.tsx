@@ -1,15 +1,20 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
+import { api } from "~/trpc/react";
 
 export default function Home() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const registerApi = api.post.register.useMutation({
+    onSuccess(data, variables, context) {
+      router.push("/" + data.name);
+    },
+  });
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (inputRef.current) {
-      console.log("/" + inputRef.current.value);
-      router.push("/" + inputRef.current.value);
+      registerApi.mutate({ name: inputRef.current.value });
     }
   };
 

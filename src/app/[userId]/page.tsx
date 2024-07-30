@@ -3,9 +3,8 @@ import type { Task as TaskType } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { api } from "~/trpc/react";
-import CustomCheckBox from "./CheckBox";
-import TaskInput from "./TaskInput";
 import Task from "./Task";
+import TaskInput from "./TaskInput";
 
 function Main() {
   const pathname = usePathname();

@@ -1,6 +1,6 @@
 import React from "react";
 import CustomCheckBox from "./CheckBox";
-import { Task as taskType } from "@prisma/client";
+import type { Task as taskType } from "@prisma/client";
 
 function Task({
   className,
